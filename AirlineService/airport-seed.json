@@ -1,0 +1,27 @@
+[
+  {
+    "Id": "00000000-0000-0000-0000-000000000001",
+    "Name": "Indira Gandhi International Airport",
+    "City": "New Delhi"
+  },
+  {
+    "Id": "00000000-0000-0000-0000-000000000002",
+    "Name": "Kempegowda International Airport",
+    "City": "Bengaluru"
+  },
+  {
+    "Id": "00000000-0000-0000-0000-000000000003",
+    "Name": "Chhatrapati Shivaji International Airport",
+    "City": "Mumbai"
+  },
+  {
+    "Id": "00000000-0000-0000-0000-000000000004",
+    "Name": "Chennai International Airport",
+    "City": "Chennai"
+  },
+  {
+    "Id": "00000000-0000-0000-0000-000000000005",
+    "Name": "Sheikh ul-Alam International Airport",
+    "City": "Srinagar"
+  }
+]
