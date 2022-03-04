@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Utility.Enums;
 using Utility.Exceptions;
 
 namespace AirlineService.Services.Inventories
@@ -44,7 +45,7 @@ namespace AirlineService.Services.Inventories
         public List<FlightResponse> SearchFlights(SearchParameter parameter)
         {
             var date = parameter.Date ?? DateTime.Now;
-            var result = context.AirlineInventories.Where(x => x.EndDate > date && x.StartDate < date).Select(x => new FlightResponse
+            var result = context.AirlineInventories.Where(x => x.EndDate > date && x.StartDate < date && x.Airline.Status == AirlineStatus.Active).Select(x => new FlightResponse
             {
                 InventoryId = x.Id,
                 AirlineName = x.Airline.Name,
@@ -53,6 +54,7 @@ namespace AirlineService.Services.Inventories
                 FromPlace = x.FromPlace.City,
                 ToPlace = x.ToPlace.City,
                 Price = x.TicketPrice,
+                LogoPath = x.Airline.LogoPath
             });
 
             if (!string.IsNullOrEmpty(parameter.ToPlace))
@@ -62,6 +64,23 @@ namespace AirlineService.Services.Inventories
                 result = result.Where(x => x.FromPlace == parameter.FromPlace);
 
             return result.ToList();
+        }
+
+        public FlightResponse GetFlight(Guid id)
+        {
+            var result = context.AirlineInventories.Where(x => x.Id == id).Select(x => new FlightResponse
+            {
+                InventoryId = x.Id,
+                AirlineName = x.Airline.Name,
+                Date = DateTime.Now,
+                FlightNumber = x.FlightNumber,
+                FromPlace = x.FromPlace.City,
+                ToPlace = x.ToPlace.City,
+                Price = x.TicketPrice,
+                LogoPath = x.Airline.LogoPath
+            });
+
+            return result.FirstOrDefault();
         }
 
         public AirlineInventory Update(AirlineInventory inventory)
@@ -99,7 +118,9 @@ namespace AirlineService.Services.Inventories
                 ToPlace = inventory.ToPlace.City,
                 BookingDetails = booking.BookingDetails,
                 NoOfSeats = booking.NoOfSeats,
-                UserId = GetUserId()
+                Price = inventory.TicketPrice,
+                UserId = GetUserId(),
+                LogoPath = inventory.Airline.LogoPath
             };
 
             var factory = new ConnectionFactory { HostName = "localhost" };

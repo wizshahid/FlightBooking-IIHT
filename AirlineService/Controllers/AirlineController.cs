@@ -2,6 +2,8 @@
 using AirlineService.Services.Airlines;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using Utility.Enums;
 
 namespace FlightBooking.Controllers
 {
@@ -19,15 +21,27 @@ namespace FlightBooking.Controllers
 
 
         [HttpPost("register")]
-        public IActionResult Post(Airline airline)
+        public IActionResult Post([FromForm] Airline airline)
         {
-            return Ok(airlineManager.Add(airline));
+            return Ok(airlineManager.Add(airline, HttpContext.Request.Scheme + "://" + HttpContext.Request.Host));
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult Get(bool fetchOnlyActive)
         {
-            return Ok(airlineManager.GetAirlines());
+            return Ok(airlineManager.GetAirlines(fetchOnlyActive));
+        }
+
+        [HttpPut("changestatus/{id}/{status}")]
+        public IActionResult ChangeStatus(Guid id, AirlineStatus status)
+        {
+            return Ok(airlineManager.ChangeAirlineStatus(id, status));
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(Guid id)
+        {
+            return Ok(airlineManager.AirlineDetails(id));
         }
     }
 }

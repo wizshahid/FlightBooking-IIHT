@@ -24,7 +24,6 @@ namespace Utility.Exceptions
                     message = "There is some problem, please try after some time.";
                     break;
             }
-
            await context.Response.WriteAsync(message);
         }
     }

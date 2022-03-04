@@ -1,7 +1,13 @@
 ﻿
 using AirlineService.Models;
+using AirlineService.Models.DTOs;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Utility.Enums;
 using Utility.Exceptions;
 
 namespace AirlineService.Services.Airlines
@@ -9,25 +15,78 @@ namespace AirlineService.Services.Airlines
     public class AirlineManager : IAirlineManager
     {
         private readonly AppDbContext context;
+        private readonly IWebHostEnvironment environment;
 
-        public AirlineManager(AppDbContext context)
+        public AirlineManager(AppDbContext context, IWebHostEnvironment environment)
         {
             this.context = context;
+            this.environment = environment;
         }
 
-        public Airline Add(Airline airline)
+        public Airline Add(Airline airline, string host)
         {
             if (context.Airlines.Any(x => x.Name == airline.Name))
                 throw new AppException($"Airline with the name {{{airline.Name}}} already exists");
+
+            var path = Path.Combine("Files", Guid.NewGuid() + airline.File.FileName);
+            using var fs = new FileStream(Path.Combine(environment.WebRootPath, path), FileMode.Create);
+            airline.File.CopyToAsync(fs).GetAwaiter();
+            airline.LogoPath = host + "/" + path;
 
             context.Airlines.Add(airline);
             context.SaveChanges();
             return airline;
         }
 
-        public List<Airline> GetAirlines()
+        public AirlineResponse AirlineDetails(Guid airlineId)
         {
-            return context.Airlines.ToList();
+            var airline = context.Airlines.Select(x => new AirlineResponse
+            {
+                ContactAddress = x.ContactAddress,
+                ContactNo = x.ContactNo,
+                Id = x.Id,
+                LogoPath = x.LogoPath,
+                Name = x.Name,
+                Status = x.Status,
+                Inventories = x.AirlineInventories.Select(z => new InventoryResponse
+                {
+                    BusinessClassSeats = z.BusinessClassSeats,
+                    EndDate = z.EndDate,
+                    FlightNumber = z.FlightNumber,
+                    FromPlace = z.FromPlace.City,
+                    FromPlaceId = z.FromPlaceId,
+                    Id = z.Id,
+                    InstrumentUsed = z.InstrumentUsed,
+                    Meals = z.Meals,
+                    NonBusinessClassSeats = z.NonBusinessClassSeats,
+                    NumberOfRows = z.NumberOfRows,
+                    ScheduledDays = z.ScheduledDays,
+                    StartDate = z.StartDate,
+                    TicketPrice = z.TicketPrice,
+                    ToPlace = z.ToPlace.City,
+                    ToPlaceId = z.ToPlaceId
+
+                }).ToList()
+            }).FirstOrDefault(x => x.Id == airlineId);
+
+            return airline;
+        }
+
+        public Airline ChangeAirlineStatus(Guid id, AirlineStatus status)
+        {
+            var airline = context.Airlines.Find(id);
+            if (airline == null)
+                throw new AppException("Invalid airline Id");
+
+            airline.Status = status;
+            context.Entry(airline).State = EntityState.Modified;
+            context.SaveChanges();
+            return airline;
+        }
+
+        public List<Airline> GetAirlines(bool fetchOnlyActive)
+        {
+            return context.Airlines.Where(x=> !fetchOnlyActive || x.Status == AirlineStatus.Active).ToList();
         }
 
         public Airline Update(Airline airline)
@@ -35,7 +94,7 @@ namespace AirlineService.Services.Airlines
             if (context.Airlines.Any(x => x.Name == airline.Name && x.Id != airline.Id))
                 throw new AppException($"Airline with the name {{{airline.Name}}} already exists");
 
-            context.Entry(airline).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            context.Entry(airline).State = EntityState.Modified;
             context.SaveChanges();
             return airline;
         }

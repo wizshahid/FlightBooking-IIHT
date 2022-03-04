@@ -16,6 +16,10 @@ namespace AirlineService.Models.DTOs
 
         public string FromPlace { get; set; }
 
+        public decimal Price { get; set; }
+
         public string ToPlace { get; set; }
+
+        public string LogoPath { get; set; }
     }
 }

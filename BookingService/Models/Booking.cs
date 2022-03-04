@@ -40,6 +40,10 @@ namespace BookingService.Models
 
         public BookingStatus Status { get; set; }
 
+        public decimal Price { get; set; }
+
+        public string LogoPath { get; set; }
+
         [Required]
         public ICollection<BookingDetail> BookingDetails { get; set; }
     }

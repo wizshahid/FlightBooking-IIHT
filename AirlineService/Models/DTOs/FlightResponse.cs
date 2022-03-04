@@ -17,5 +17,7 @@ namespace AirlineService.Models
         public string ToPlace { get; set; }
 
         public int Price { get; set; }
+
+        public string LogoPath { get; set; }
     }
 }

@@ -32,6 +32,12 @@ namespace AirlineService.Controllers
             return Ok(manager.SearchFlights(parameter));
         }
 
+        [HttpGet("/api/flight/{id}")]
+        public IActionResult GetFlight(Guid id)
+        {
+            return Ok(manager.GetFlight(id));
+        }
+
         [HttpGet("/api/flight/airports")]
         public IActionResult GetAirports()
         {
@@ -39,7 +45,7 @@ namespace AirlineService.Controllers
         }
 
         [HttpPost("/api/booking/{flightid}")]
-        [Authorize(Roles = "User")]
+        [Authorize]
         public IActionResult BookFlight(Guid flightid, BookingDTO booking)
         {
             return Ok(manager.BookFlight(flightid, booking));

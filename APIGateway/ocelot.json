@@ -85,6 +85,30 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
+      "DownstreamPathTemplate": "/api/airline/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 61886
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1.0/flight/airlines/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/airline/changestatus/{id}/{status}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 61886
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1.0/flight/airlines/changestatus/{id}/{status}",
+      "UpstreamHttpMethod": [ "PUT" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/flight/search",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -130,6 +154,18 @@
         }
       ],
       "UpstreamPathTemplate": "/api/v1.0/flight/booking/history/{emailId}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/flight/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 61886
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1.0/flight/{id}",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
