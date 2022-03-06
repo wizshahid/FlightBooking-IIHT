@@ -23,6 +23,7 @@ namespace FlightBooking.Controllers
         [HttpPost("register")]
         public IActionResult Post([FromForm] Airline airline)
         {
+            ModelState.Validate();
             return Ok(airlineManager.Add(airline, HttpContext.Request.Scheme + "://" + HttpContext.Request.Host));
         }
 

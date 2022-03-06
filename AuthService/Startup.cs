@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using AuthService.Services.Auth;
 using Utility.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService
 {
@@ -27,6 +28,11 @@ namespace AuthService
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthService", Version = "v1" });
+            });
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
             });
 
             services.AddDbContextPool<AppDbContext>(options =>

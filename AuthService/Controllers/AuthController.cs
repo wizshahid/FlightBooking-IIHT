@@ -1,6 +1,7 @@
 ﻿using AuthService.Models;
 using AuthService.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Utility.Exceptions;
 
 namespace AuthService.Controllers
 {
@@ -17,18 +18,21 @@ namespace AuthService.Controllers
         [HttpPost("api/admin/login")]
         public IActionResult AdminLogin(User user)
         {
+            ModelState.Validate();
             return Ok(authManager.AuthenticateAdmin(user));
         }
 
         [HttpPost("api/user/login")]
         public IActionResult UserLogin(User user)
         {
+            ModelState.Validate();
             return Ok(authManager.AuthenticateUser(user));
         }
 
         [HttpPost("api/user/register")]
         public IActionResult UserRegister(User user)
         {
+            ModelState.Validate();
             authManager.UserRegister(user);
             return Ok();
         }

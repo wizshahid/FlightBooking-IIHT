@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Utility.Exceptions
 {
@@ -8,6 +9,16 @@ namespace Utility.Exceptions
         {
 
         }
+    }
+
+    public class AppValidationException : Exception
+    {
+        public AppValidationException(List<AppError> errors)
+        {
+            Errors = errors;
+        }
+
+        public List<AppError> Errors { get; private set; }
     }
 
 

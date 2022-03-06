@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using Utility.Exceptions;
 
 namespace AirlineService.Controllers
 {
@@ -23,6 +24,7 @@ namespace AirlineService.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Post(AirlineInventory inventory)
         {
+            ModelState.Validate();
             return Ok(manager.Add(inventory));
         }
 
@@ -48,6 +50,7 @@ namespace AirlineService.Controllers
         [Authorize]
         public IActionResult BookFlight(Guid flightid, BookingDTO booking)
         {
+            ModelState.Validate();
             return Ok(manager.BookFlight(flightid, booking));
         }
     }
