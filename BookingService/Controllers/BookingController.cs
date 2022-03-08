@@ -24,8 +24,8 @@ namespace BookingService.Controllers
             return Ok(bookingManager.GetBooking(pnr));
         }
 
-        [HttpGet("history/{emailId}")]
-        public IActionResult GetByEmail(string emailId)
+        [HttpGet("history")]
+        public IActionResult GetByEmail([FromQuery]string emailId)
         {
             return Ok(bookingManager.GetByEmail(emailId));
         }
@@ -33,8 +33,7 @@ namespace BookingService.Controllers
         [HttpDelete("cancel/{pnr}")]
         public IActionResult Cancel(Guid pnr)
         {
-            bookingManager.CancelBooking(pnr);
-            return Ok();
+            return Ok(bookingManager.CancelBooking(pnr));
         }
     }
 }

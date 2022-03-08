@@ -145,7 +145,7 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
-      "DownstreamPathTemplate": "/api/Booking/history/{emailId}",
+      "DownstreamPathTemplate": "/api/Booking/history",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -153,7 +153,7 @@
           "Port": 37649
         }
       ],
-      "UpstreamPathTemplate": "/api/v1.0/flight/booking/history/{emailId}",
+      "UpstreamPathTemplate": "/api/v1.0/flight/booking/history",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {

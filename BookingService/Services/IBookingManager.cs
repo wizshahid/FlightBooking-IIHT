@@ -12,6 +12,6 @@ namespace BookingService.Services
 
         List<Booking> GetByEmail(string email);
 
-        void CancelBooking(Guid pnr);
+        Booking CancelBooking(Guid pnr);
     }
 }

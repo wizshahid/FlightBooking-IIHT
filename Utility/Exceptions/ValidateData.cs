@@ -17,11 +17,12 @@ namespace Microsoft.AspNetCore.Mvc
                 {
                     var error = item.Value?.Errors?.FirstOrDefault();
 
-                    errors.Add(new AppError
-                    {
-                        Message = string.IsNullOrEmpty(error.ErrorMessage) ? error?.Exception?.Message : error?.ErrorMessage,
-                        Field = item.Key
-                    });
+                    if (error != null)
+                        errors.Add(new AppError
+                        {
+                            Message = string.IsNullOrEmpty(error.ErrorMessage) ? error?.Exception?.Message : error?.ErrorMessage,
+                            Field = item.Key
+                        });
                 }
                 throw new AppValidationException(errors);
             }

@@ -28,7 +28,7 @@ namespace AuthService.Services.Auth
             this.context = context;
         }
 
-        public string AuthenticateAdmin(User user)
+        public AuthResponse AuthenticateAdmin(AuthRequest user)
         {
             var dbUser = context.Users.FirstOrDefault(x => x.Username == user.Username && x.Password == user.Password && x.Role == UserRole.Admin);
             if (dbUser == null)
@@ -37,7 +37,7 @@ namespace AuthService.Services.Auth
             return GenerateToken(dbUser);
         }
 
-        public string AuthenticateUser(User user)
+        public AuthResponse AuthenticateUser(AuthRequest user)
         {
             var dbUser = context.Users.FirstOrDefault(x => x.Username == user.Username && x.Password == user.Password);
             if (dbUser == null)
@@ -46,7 +46,7 @@ namespace AuthService.Services.Auth
             return GenerateToken(dbUser);
         }
 
-        private string GenerateToken(User user)
+        private AuthResponse GenerateToken(User user)
         {
             var tokenHandlder = new JwtSecurityTokenHandler();
 
@@ -64,13 +64,25 @@ namespace AuthService.Services.Auth
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)), SecurityAlgorithms.HmacSha256)
             };
 
-            var token = tokenHandlder.CreateToken(descriptor);
-            return tokenHandlder.WriteToken(token);
+            var securityToken = tokenHandlder.CreateToken(descriptor);
+            var token = tokenHandlder.WriteToken(securityToken);
+            return new AuthResponse
+            {
+                Token = token,
+                Id = user.Id,
+                UserRole = UserRole.Admin,
+            };
         }
 
-        public void UserRegister(User user)
+        public void UserRegister(AuthRequest authRequest)
         {
-            user.Role = UserRole.User;
+            var user = new User
+            {
+                Username = authRequest.Username,
+                Password = authRequest.Password,
+                Role = UserRole.User
+            };
+
             if (context.Users.Any(x => x.Username == user.Username))
                 throw new AppException($"User with username {{{user.Username}}} already exists");
 

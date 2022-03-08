@@ -16,21 +16,21 @@ namespace AuthService.Controllers
         }
 
         [HttpPost("api/admin/login")]
-        public IActionResult AdminLogin(User user)
+        public IActionResult AdminLogin(AuthRequest user)
         {
             ModelState.Validate();
             return Ok(authManager.AuthenticateAdmin(user));
         }
 
         [HttpPost("api/user/login")]
-        public IActionResult UserLogin(User user)
+        public IActionResult UserLogin(AuthRequest user)
         {
             ModelState.Validate();
             return Ok(authManager.AuthenticateUser(user));
         }
 
         [HttpPost("api/user/register")]
-        public IActionResult UserRegister(User user)
+        public IActionResult UserRegister(AuthRequest user)
         {
             ModelState.Validate();
             authManager.UserRegister(user);

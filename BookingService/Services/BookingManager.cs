@@ -30,7 +30,7 @@ namespace BookingService.Services
             return booking;
         }
 
-        public void CancelBooking(Guid pnr)
+        public Booking CancelBooking(Guid pnr)
         {
             var booking = context.Bookings.Find(pnr);
 
@@ -43,8 +43,12 @@ namespace BookingService.Services
             if (booking.UserId != GetUserId())
                 throw new AppException("You don't have access to cancel this booking");
 
+            if (booking.Date.Subtract(DateTime.Now).TotalHours < 24)
+                throw new AppException("Booking can't be cancelled");
+
             booking.Status = BookingStatus.Cancel;
             context.SaveChanges();
+            return booking;
         }
 
         public Booking GetBooking(Guid pnr)
@@ -61,9 +65,14 @@ namespace BookingService.Services
 
         public List<Booking> GetByEmail(string email)
         {
-            return context.Bookings.
+            var bookings = context.Bookings.
                 Include(x => x.BookingDetails).
-                Where(x => x.Email == email && x.UserId == GetUserId() && x.Status == BookingStatus.Success).ToList();
+                Where(x => x.UserId == GetUserId() && x.Status == BookingStatus.Success);
+
+            if (!string.IsNullOrEmpty(email))
+                bookings = bookings.Where(x => x.Email == email);
+
+            return bookings.ToList();
         }
     }
 }

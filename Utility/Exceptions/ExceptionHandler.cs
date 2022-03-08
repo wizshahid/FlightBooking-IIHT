@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -25,6 +26,7 @@ namespace Utility.Exceptions
                     errors.Add(new AppError { Message = exception?.Message });
                     break;
                 case AppValidationException ve:
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     errors = ve.Errors;
                     break;
                 default:
@@ -32,7 +34,13 @@ namespace Utility.Exceptions
                     errors.Add(new AppError { Message = "There is some problem, please try after some time." });
                     break;
             }
-           await context.Response.WriteAsync(JsonConvert.SerializeObject(errors));
+           await context.Response.WriteAsync(JsonConvert.SerializeObject(errors, new JsonSerializerSettings
+           {
+               ContractResolver = new DefaultContractResolver
+               {
+                   NamingStrategy = new CamelCaseNamingStrategy()
+               }
+           }));
         }
     }
 }

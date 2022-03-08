@@ -4,10 +4,10 @@ namespace AuthService.Services.Auth
 {
     public interface IAuthManager
     {
-        string AuthenticateAdmin(User User);
+        AuthResponse AuthenticateAdmin(AuthRequest User);
 
-        string AuthenticateUser(User user);
+        AuthResponse AuthenticateUser(AuthRequest user);
 
-        void UserRegister(User user);
+        void UserRegister(AuthRequest user);
     }
 }
