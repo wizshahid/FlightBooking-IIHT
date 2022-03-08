@@ -44,6 +44,8 @@ namespace BookingService.Models
 
         public string LogoPath { get; set; }
 
+        public FlightType FlightType { get; set; }
+
         [Required]
         public ICollection<BookingDetail> BookingDetails { get; set; }
     }

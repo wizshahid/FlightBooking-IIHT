@@ -39,4 +39,10 @@
         User = 0,
         Admin = 1,
     }
+
+    public enum FlightType
+    {
+        Oneway,
+        RoundTrip
+    }
 }

@@ -20,6 +20,8 @@ namespace AirlineService.Models.DTOs
 
         public DateTime Date { get; set; }
 
+        public FlightType FlightType { get; set; }
+
         [Required]
         public List<BookingDetailDTO> BookingDetails { get; set; }
     }

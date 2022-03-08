@@ -45,20 +45,26 @@ namespace AirlineService.Services.Inventories
         public List<FlightResponse> SearchFlights(SearchParameter parameter)
         {
             var date = parameter.Date ?? DateTime.Now;
-            var result = context.AirlineInventories.Where(x => x.EndDate > date && x.StartDate < date && x.Airline.Status == AirlineStatus.Active).Select(x => new FlightResponse
-            {
-                InventoryId = x.Id,
-                AirlineName = x.Airline.Name,
-                Date = date,
-                FlightNumber = x.FlightNumber,
-                FromPlace = x.FromPlace.City,
-                ToPlace = x.ToPlace.City,
-                Price = x.TicketPrice,
-                LogoPath = x.Airline.LogoPath
-            });
+            var result = context.AirlineInventories
+                .Where(x => x.EndDate > date && x.StartDate < date && x.Airline.Status == AirlineStatus.Active && x.FlightType == parameter.FlightType)
+                .Select(x => new FlightResponse
+                {
+                    InventoryId = x.Id,
+                    AirlineName = x.Airline.Name,
+                    Date = date,
+                    FlightNumber = x.FlightNumber,
+                    FromPlace = x.FromPlace.City,
+                    ToPlace = x.ToPlace.City,
+                    Price = x.TicketPrice,
+                    LogoPath = x.Airline.LogoPath,
+                    FlightType = x.FlightType
+                });
 
             if (!string.IsNullOrEmpty(parameter.ToPlace))
                 result = result.Where(x => x.ToPlace == parameter.ToPlace);
+
+            if (!string.IsNullOrEmpty(parameter.AirlineName))
+                result = result.Where(x => x.AirlineName == parameter.AirlineName);
 
             if (!string.IsNullOrEmpty(parameter.FromPlace))
                 result = result.Where(x => x.FromPlace == parameter.FromPlace);
@@ -77,7 +83,8 @@ namespace AirlineService.Services.Inventories
                 FromPlace = x.FromPlace.City,
                 ToPlace = x.ToPlace.City,
                 Price = x.TicketPrice,
-                LogoPath = x.Airline.LogoPath
+                LogoPath = x.Airline.LogoPath,
+                FlightType = x.FlightType
             });
 
             return result.FirstOrDefault();
@@ -120,7 +127,8 @@ namespace AirlineService.Services.Inventories
                 NoOfSeats = booking.NoOfSeats,
                 Price = inventory.TicketPrice,
                 UserId = GetUserId(),
-                LogoPath = inventory.Airline.LogoPath
+                LogoPath = inventory.Airline.LogoPath,
+                FlightType = inventory.FlightType
             };
 
             var factory = new ConnectionFactory { HostName = "localhost" };

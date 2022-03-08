@@ -1,4 +1,5 @@
 ﻿using System;
+using Utility.Enums;
 
 namespace AirlineService.Models
 {
@@ -19,5 +20,7 @@ namespace AirlineService.Models
         public int Price { get; set; }
 
         public string LogoPath { get; set; }
+
+        public FlightType FlightType { get; set; }
     }
 }
