@@ -72,6 +72,54 @@ namespace AirlineService.Services.Inventories
             return result.ToList();
         }
 
+        public FlightList SearchFlights1(SearchParameter parameter)
+        {
+            var result = new FlightList
+            {
+                OnewayFlight = context.AirlineInventories
+                .Where(x => x.EndDate > parameter.Date
+                            && x.StartDate < parameter.Date
+                            && x.Airline.Status == AirlineStatus.Active
+                            && x.FromPlace.Name == parameter.FromPlace
+                            && x.ToPlace.Name == parameter.ToPlace)
+                .Select(x => new FlightResponse
+                {
+                    InventoryId = x.Id,
+                    AirlineName = x.Airline.Name,
+                    Date = parameter.Date.Value,
+                    FlightNumber = x.FlightNumber,
+                    FromPlace = x.FromPlace.City,
+                    ToPlace = x.ToPlace.City,
+                    Price = x.TicketPrice,
+                    LogoPath = x.Airline.LogoPath,
+                    FlightType = x.FlightType
+                }).ToList()
+            };
+
+            if (parameter.FlightType == FlightType.RoundTrip)
+            {
+                result.ReturnFlight = context.AirlineInventories
+                .Where(x => x.EndDate > parameter.ReturnDate
+                            && x.StartDate < parameter.ReturnDate
+                            && x.Airline.Status == AirlineStatus.Active
+                            && x.FromPlace.Name == parameter.ToPlace
+                            && x.ToPlace.Name == parameter.FromPlace)
+                .Select(x => new FlightResponse
+                {
+                    InventoryId = x.Id,
+                    AirlineName = x.Airline.Name,
+                    Date = parameter.ReturnDate.Value,
+                    FlightNumber = x.FlightNumber,
+                    FromPlace = x.FromPlace.City,
+                    ToPlace = x.ToPlace.City,
+                    Price = x.TicketPrice,
+                    LogoPath = x.Airline.LogoPath,
+                    FlightType = x.FlightType
+                }).ToList();
+            }
+            return result;
+        }
+
         public FlightResponse GetFlight(Guid id)
         {
             var result = context.AirlineInventories.Where(x => x.Id == id).Select(x => new FlightResponse

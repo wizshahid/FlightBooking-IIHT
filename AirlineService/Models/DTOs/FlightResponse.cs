@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Utility.Enums;
 
 namespace AirlineService.Models
@@ -22,5 +23,12 @@ namespace AirlineService.Models
         public string LogoPath { get; set; }
 
         public FlightType FlightType { get; set; }
+    }
+
+    public class FlightList
+    {
+        public List<FlightResponse> OnewayFlight { get; set; }
+
+        public List<FlightResponse> ReturnFlight { get; set; }
     }
 }

@@ -7,6 +7,8 @@ namespace AirlineService.Models
     {
         public DateTime? Date { get; set; }
 
+        public DateTime? ReturnDate { get; set; }
+
         public string FromPlace { get; set; }
 
         public string ToPlace { get; set; }
