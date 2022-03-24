@@ -25,9 +25,16 @@ namespace BookingService.Controllers
         }
 
         [HttpGet("history")]
-        public IActionResult GetByEmail([FromQuery]string emailId)
+        public IActionResult GetByEmail([FromQuery] string emailId)
         {
             return Ok(bookingManager.GetByEmail(emailId));
+        }
+
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAll()
+        {
+            return Ok(bookingManager.GetAll());
         }
 
         [HttpDelete("cancel/{pnr}")]

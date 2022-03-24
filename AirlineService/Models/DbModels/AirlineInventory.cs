@@ -53,7 +53,5 @@ namespace AirlineService.Models
         public int NumberOfRows { get; set; }
 
         public Meals Meals { get; set; }
-
-        public FlightType FlightType { get; set; }
     }
 }

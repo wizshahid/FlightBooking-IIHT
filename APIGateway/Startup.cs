@@ -32,7 +32,9 @@ namespace APIGateway
                 options.AddPolicy("AllowOrigin", 
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder.WithOrigins("http://localhost:4200",
+                                            "https://flightbookingclient.azurewebsites.net"
+                                            )
                                             .AllowAnyHeader()
                                             .AllowAnyMethod();
                     });

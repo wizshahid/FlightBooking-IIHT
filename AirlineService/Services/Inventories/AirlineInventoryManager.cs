@@ -42,68 +42,37 @@ namespace AirlineService.Services.Inventories
             return context.Airports.ToList();
         }
 
-        public List<FlightResponse> SearchFlights(SearchParameter parameter)
-        {
-            var date = parameter.Date ?? DateTime.Now;
-            var result = context.AirlineInventories
-                .Where(x => x.EndDate > date && x.StartDate < date && x.Airline.Status == AirlineStatus.Active && x.FlightType == parameter.FlightType)
-                .Select(x => new FlightResponse
-                {
-                    InventoryId = x.Id,
-                    AirlineName = x.Airline.Name,
-                    Date = date,
-                    FlightNumber = x.FlightNumber,
-                    FromPlace = x.FromPlace.City,
-                    ToPlace = x.ToPlace.City,
-                    Price = x.TicketPrice,
-                    LogoPath = x.Airline.LogoPath,
-                    FlightType = x.FlightType
-                });
-
-            if (!string.IsNullOrEmpty(parameter.ToPlace))
-                result = result.Where(x => x.ToPlace == parameter.ToPlace);
-
-            if (!string.IsNullOrEmpty(parameter.AirlineName))
-                result = result.Where(x => x.AirlineName == parameter.AirlineName);
-
-            if (!string.IsNullOrEmpty(parameter.FromPlace))
-                result = result.Where(x => x.FromPlace == parameter.FromPlace);
-
-            return result.ToList();
-        }
-
-        public FlightList SearchFlights1(SearchParameter parameter)
+        public FlightList SearchFlights(SearchParameter parameter)
         {
             var result = new FlightList
             {
-                OnewayFlight = context.AirlineInventories
+                OutboundFlights = context.AirlineInventories
                 .Where(x => x.EndDate > parameter.Date
                             && x.StartDate < parameter.Date
                             && x.Airline.Status == AirlineStatus.Active
-                            && x.FromPlace.Name == parameter.FromPlace
-                            && x.ToPlace.Name == parameter.ToPlace)
+                            && x.FromPlaceId == parameter.FromPlaceId
+                            && x.ToPlaceId == parameter.ToPlaceId)
                 .Select(x => new FlightResponse
                 {
                     InventoryId = x.Id,
                     AirlineName = x.Airline.Name,
-                    Date = parameter.Date.Value,
+                    Date = parameter.Date,
                     FlightNumber = x.FlightNumber,
                     FromPlace = x.FromPlace.City,
                     ToPlace = x.ToPlace.City,
                     Price = x.TicketPrice,
                     LogoPath = x.Airline.LogoPath,
-                    FlightType = x.FlightType
                 }).ToList()
             };
 
             if (parameter.FlightType == FlightType.RoundTrip)
             {
-                result.ReturnFlight = context.AirlineInventories
+                result.ReturnFlights = context.AirlineInventories
                 .Where(x => x.EndDate > parameter.ReturnDate
                             && x.StartDate < parameter.ReturnDate
                             && x.Airline.Status == AirlineStatus.Active
-                            && x.FromPlace.Name == parameter.ToPlace
-                            && x.ToPlace.Name == parameter.FromPlace)
+                            && x.FromPlaceId == parameter.ToPlaceId
+                            && x.ToPlaceId == parameter.FromPlaceId)
                 .Select(x => new FlightResponse
                 {
                     InventoryId = x.Id,
@@ -114,7 +83,6 @@ namespace AirlineService.Services.Inventories
                     ToPlace = x.ToPlace.City,
                     Price = x.TicketPrice,
                     LogoPath = x.Airline.LogoPath,
-                    FlightType = x.FlightType
                 }).ToList();
             }
             return result;
@@ -132,7 +100,6 @@ namespace AirlineService.Services.Inventories
                 ToPlace = x.ToPlace.City,
                 Price = x.TicketPrice,
                 LogoPath = x.Airline.LogoPath,
-                FlightType = x.FlightType
             });
 
             return result.FirstOrDefault();
@@ -145,16 +112,36 @@ namespace AirlineService.Services.Inventories
             return inventory;
         }
 
-        public BookingEventDTO BookFlight(Guid flightId, BookingDTO booking)
+        public BookingEventDTO BookFlight(BookingDTO booking)
         {
             if (booking.NoOfSeats != booking.BookingDetails.Count)
                 throw new AppException("The count of details doesn't match with number of seats booked");
+
+            AirlineInventory returnInventory = null;
+
+            if (booking.FlightType == FlightType.RoundTrip)
+            {
+                if (booking.ReturnDate == null)
+                    throw new AppException("Return date is required in case of round trip");
+
+                if (booking.ReturnFlightId == null)
+                    throw new AppException("Return flight is required in case of round trip");
+
+                returnInventory = context.AirlineInventories.
+                Include(x => x.Airline).
+                Include(x => x.ToPlace).
+                Include(x => x.FromPlace).
+                FirstOrDefault(x => x.Id == booking.ReturnFlightId);
+
+                if (returnInventory == null)
+                    throw new AppException("Invalid ReturnFlightId");
+            }
 
             var inventory = context.AirlineInventories.
                 Include(x => x.Airline).
                 Include(x => x.ToPlace).
                 Include(x => x.FromPlace).
-                FirstOrDefault(x => x.Id == flightId);
+                FirstOrDefault(x => x.Id == booking.OutBoundFlightId);
 
             if (inventory == null)
                 throw new AppException("Invalid FlightId");
@@ -162,23 +149,52 @@ namespace AirlineService.Services.Inventories
             var bookingEvent = new BookingEventDTO
             {
                 Id = Guid.NewGuid(),
-                FlightId = flightId,
                 Date = booking.Date,
                 Meals = booking.Meals,
                 Name = booking.Name,
                 Email = booking.Email,
-                AirlineName = inventory.Airline.Name,
-                FlightNumber = inventory.FlightNumber,
                 FromPlace = inventory.FromPlace.City,
                 ToPlace = inventory.ToPlace.City,
                 BookingDetails = booking.BookingDetails,
                 NoOfSeats = booking.NoOfSeats,
-                Price = inventory.TicketPrice,
                 UserId = GetUserId(),
-                LogoPath = inventory.Airline.LogoPath,
-                FlightType = inventory.FlightType
+                FlightType = booking.FlightType
             };
 
+            bookingEvent.OutboundFlight = new FlightDetail
+            {
+                AirlineName = inventory.Airline.Name,
+                Date = booking.Date,
+                Meals = booking.Meals,
+                FlightId = booking.OutBoundFlightId,
+                FlightNumber = inventory.FlightNumber,
+                LogoPath = inventory.Airline.LogoPath,
+                Price = inventory.TicketPrice
+            };
+
+            if (booking.FlightType == FlightType.RoundTrip)
+            {
+                bookingEvent.ReturnFlight = new FlightDetail
+                {
+                    AirlineName = returnInventory.Airline.Name,
+                    Date = booking.ReturnDate.Value,
+                    Meals = booking.ReturnMeals,
+                    FlightId = booking.ReturnFlightId.Value,
+                    FlightNumber = returnInventory.FlightNumber,
+                    LogoPath = returnInventory.Airline.LogoPath,
+                    Price = returnInventory.TicketPrice
+                };
+            }
+
+            if (!string.IsNullOrEmpty(booking.CouponCode))
+            {
+                var coupon = context.DiscountCoupons.FirstOrDefault(x => x.CouponCode == booking.CouponCode && x.ValidUpto > DateTime.Now);
+                if (coupon != null)
+                {
+                    bookingEvent.CouponCode = coupon.CouponCode;
+                    bookingEvent.DiscountPercent = coupon.DiscountPercent;
+                }
+            }
             var factory = new ConnectionFactory { HostName = "localhost" };
 
             using var connection = factory.CreateConnection();

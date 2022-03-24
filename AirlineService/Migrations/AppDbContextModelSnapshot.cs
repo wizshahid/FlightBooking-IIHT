@@ -65,9 +65,6 @@ namespace AirlineService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("FlightType")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("FromPlaceId")
                         .HasColumnType("uniqueidentifier");
 
@@ -153,6 +150,26 @@ namespace AirlineService.Migrations
                             City = "Srinagar",
                             Name = "Sheikh ul-Alam International Airport"
                         });
+                });
+
+            modelBuilder.Entity("AirlineService.Models.DbModels.DiscountCoupon", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CouponCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DiscountPercent")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ValidUpto")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DiscountCoupons");
                 });
 
             modelBuilder.Entity("AirlineService.Models.AirlineInventory", b =>

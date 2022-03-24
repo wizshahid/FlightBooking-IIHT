@@ -43,7 +43,7 @@ namespace BookingService.Services
             if (booking.UserId != GetUserId())
                 throw new AppException("You don't have access to cancel this booking");
 
-            if (booking.Date.Subtract(DateTime.Now).TotalHours < 24)
+            if (booking.OutBoundFlight.Date.Subtract(DateTime.Now).TotalHours < 24)
                 throw new AppException("Booking can't be cancelled");
 
             booking.Status = BookingStatus.Cancel;
@@ -55,6 +55,8 @@ namespace BookingService.Services
         {
             var booking = context.Bookings.
                 Include(x => x.BookingDetails).
+                Include(x => x.OutBoundFlight).
+                Include(x => x.ReturnFlight).
                 FirstOrDefault(x => x.Id == pnr);
 
             if (booking == null || booking.Status == BookingStatus.Cancel)
@@ -66,13 +68,23 @@ namespace BookingService.Services
         public List<Booking> GetByEmail(string email)
         {
             var bookings = context.Bookings.
-                Include(x => x.BookingDetails).
+                Include(x => x.OutBoundFlight).
+                Include(x => x.ReturnFlight).
+                // Include(x => x.BookingDetails).
                 Where(x => x.UserId == GetUserId() && x.Status == BookingStatus.Success);
 
             if (!string.IsNullOrEmpty(email))
                 bookings = bookings.Where(x => x.Email == email);
 
             return bookings.ToList();
+        }
+
+        public List<Booking> GetAll()
+        {
+            return context.Bookings.
+                  Include(x => x.OutBoundFlight).
+                  Include(x => x.ReturnFlight).
+                  ToList();
         }
     }
 }

@@ -31,7 +31,8 @@ namespace Utility.Exceptions
                     break;
                 default:
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    errors.Add(new AppError { Message = "There is some problem, please try after some time." });
+                   // errors.Add(new AppError { Message = "There is some problem, please try after some time." });
+                    errors.Add(new AppError { Message = exception.Message});
                     break;
             }
            await context.Response.WriteAsync(JsonConvert.SerializeObject(errors, new JsonSerializerSettings

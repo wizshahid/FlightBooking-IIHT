@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220224044451_AddedUserTable")]
-    partial class AddedUserTable
+    [Migration("20220317081731_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,9 +28,14 @@ namespace AuthService.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -42,6 +47,7 @@ namespace AuthService.Migrations
                         {
                             Id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
                             Password = "admin",
+                            Role = 1,
                             Username = "admin"
                         });
                 });

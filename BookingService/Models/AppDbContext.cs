@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BookingService.Models
 {
@@ -9,8 +10,20 @@ namespace BookingService.Models
 
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            foreach (var relationShip in modelBuilder.Model.GetEntityTypes().SelectMany(x => x.GetForeignKeys()))
+            {
+                relationShip.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+        }
+
         public DbSet<Booking> Bookings { get; set; }
 
         public DbSet<BookingDetail> BookingDetails { get; set; }
+
+        public DbSet<FlightDetail> FlightDetails { get; set; }
     }
 }

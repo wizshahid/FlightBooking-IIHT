@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AirlineService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220226075220_AirportTable")]
-    partial class AirportTable
+    [Migration("20220313165000_ConsolidatedMigration")]
+    partial class ConsolidatedMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,6 +37,7 @@ namespace AirlineService.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<short>("Status")
@@ -63,6 +64,7 @@ namespace AirlineService.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FlightNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("FromPlaceId")
@@ -155,7 +157,7 @@ namespace AirlineService.Migrations
             modelBuilder.Entity("AirlineService.Models.AirlineInventory", b =>
                 {
                     b.HasOne("AirlineService.Models.Airline", "Airline")
-                        .WithMany()
+                        .WithMany("AirlineInventories")
                         .HasForeignKey("AirlineId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -177,6 +179,11 @@ namespace AirlineService.Migrations
                     b.Navigation("FromPlace");
 
                     b.Navigation("ToPlace");
+                });
+
+            modelBuilder.Entity("AirlineService.Models.Airline", b =>
+                {
+                    b.Navigation("AirlineInventories");
                 });
 #pragma warning restore 612, 618
         }

@@ -15,10 +15,10 @@ namespace AirlineService.Services.Inventories
 
         List<Airport> GetAirports();
 
-        List<FlightResponse> SearchFlights(SearchParameter parameter);
+        FlightList SearchFlights(SearchParameter parameter);
 
         FlightResponse GetFlight(Guid id);
 
-        BookingEventDTO BookFlight(Guid flightId, BookingDTO booking);
+        BookingEventDTO BookFlight(BookingDTO booking);
     }
 }

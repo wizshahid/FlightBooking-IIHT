@@ -121,7 +121,7 @@
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
-      "DownstreamPathTemplate": "/api/booking/{flightid}",
+      "DownstreamPathTemplate": "/api/booking",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -129,7 +129,7 @@
           "Port": 61886
         }
       ],
-      "UpstreamPathTemplate": "/api/v1.0/flight/booking/{flightid}",
+      "UpstreamPathTemplate": "/api/v1.0/flight/booking",
       "UpstreamHttpMethod": [ "POST" ]
     },
     {
@@ -157,6 +157,18 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
+      "DownstreamPathTemplate": "/api/Booking/all",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 37649
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1.0/flight/booking/all",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/flight/{id}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -179,6 +191,30 @@
       ],
       "UpstreamPathTemplate": "/api/v1.0/flight/booking/cancel/{pnr}",
       "UpstreamHttpMethod": [ "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/discountcoupon",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 61886
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1.0/discountcoupon",
+      "UpstreamHttpMethod": [ "POST", "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/discountcoupon/code/{code}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 61886
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1.0/discountcoupon/code/{code}",
+      "UpstreamHttpMethod": [ "POST", "GET" ]
     }
   ]
 }

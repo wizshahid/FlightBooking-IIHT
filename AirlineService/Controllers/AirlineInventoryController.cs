@@ -46,12 +46,12 @@ namespace AirlineService.Controllers
             return Ok(manager.GetAirports());
         }
 
-        [HttpPost("/api/booking/{flightid}")]
+        [HttpPost("/api/booking")]
         [Authorize]
-        public IActionResult BookFlight(Guid flightid, BookingDTO booking)
+        public IActionResult BookFlight(BookingDTO booking)
         {
             ModelState.Validate();
-            return Ok(manager.BookFlight(flightid, booking));
+            return Ok(manager.BookFlight(booking));
         }
     }
 }

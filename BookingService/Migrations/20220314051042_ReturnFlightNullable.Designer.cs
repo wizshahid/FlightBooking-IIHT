@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookingService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220308060647_FlightTypePropAdded")]
-    partial class FlightTypePropAdded
+    [Migration("20220314051042_ReturnFlightNullable")]
+    partial class ReturnFlightNullable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,21 +27,7 @@ namespace BookingService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AirlineName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("FlightId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FlightNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -52,12 +38,6 @@ namespace BookingService.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LogoPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<short>("Meals")
-                        .HasColumnType("smallint");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -65,8 +45,11 @@ namespace BookingService.Migrations
                     b.Property<int>("NoOfSeats")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Guid>("OutBoundId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ReturnId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
@@ -79,6 +62,10 @@ namespace BookingService.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OutBoundId");
+
+                    b.HasIndex("ReturnId");
 
                     b.ToTable("Bookings");
                 });
@@ -112,12 +99,64 @@ namespace BookingService.Migrations
                     b.ToTable("BookingDetails");
                 });
 
+            modelBuilder.Entity("BookingService.Models.FlightDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AirlineName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("FlightId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FlightNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LogoPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("Meals")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FlightDetails");
+                });
+
+            modelBuilder.Entity("BookingService.Models.Booking", b =>
+                {
+                    b.HasOne("BookingService.Models.FlightDetail", "OutBoundFlight")
+                        .WithMany()
+                        .HasForeignKey("OutBoundId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("BookingService.Models.FlightDetail", "ReturnFlight")
+                        .WithMany()
+                        .HasForeignKey("ReturnId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("OutBoundFlight");
+
+                    b.Navigation("ReturnFlight");
+                });
+
             modelBuilder.Entity("BookingService.Models.BookingDetail", b =>
                 {
                     b.HasOne("BookingService.Models.Booking", "Booking")
                         .WithMany("BookingDetails")
                         .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Booking");

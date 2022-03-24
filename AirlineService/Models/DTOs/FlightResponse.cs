@@ -21,14 +21,12 @@ namespace AirlineService.Models
         public int Price { get; set; }
 
         public string LogoPath { get; set; }
-
-        public FlightType FlightType { get; set; }
     }
 
     public class FlightList
     {
-        public List<FlightResponse> OnewayFlight { get; set; }
+        public List<FlightResponse> OutboundFlights { get; set; }
 
-        public List<FlightResponse> ReturnFlight { get; set; }
+        public List<FlightResponse> ReturnFlights { get; set; }
     }
 }

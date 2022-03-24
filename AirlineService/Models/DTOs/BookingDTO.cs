@@ -18,9 +18,19 @@ namespace AirlineService.Models.DTOs
 
         public Meals Meals { get; set; }
 
+        public Meals ReturnMeals { get; set; }
+
+        public Guid OutBoundFlightId { get; set; }
+
+        public Guid? ReturnFlightId { get; set; }
+
         public DateTime Date { get; set; }
 
+        public DateTime? ReturnDate { get; set; }
+
         public FlightType FlightType { get; set; }
+
+        public string CouponCode { get; set; }
 
         [Required]
         public List<BookingDetailDTO> BookingDetails { get; set; }

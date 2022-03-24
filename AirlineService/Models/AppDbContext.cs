@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AirlineService.Models.DbModels;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,8 @@ namespace AirlineService.Models
         public DbSet<AirlineInventory> AirlineInventories { get; set; }
 
         public DbSet<Airport> Airports { get; set; }
+
+        public DbSet<DiscountCoupon> DiscountCoupons { get; set; }
 
         private static List<Airport> SeedAirportData()
         {
